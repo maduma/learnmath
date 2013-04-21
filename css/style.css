@@ -1,0 +1,10 @@
+﻿div#login {
+    text-align: right;
+}
+
+li {
+    margin-left: 0;
+    border-left: none;
+    list-style: none;
+    /* display: inline; */
+}
