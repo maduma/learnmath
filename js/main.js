@@ -12,9 +12,9 @@ function changeView(view) {
 
 function ctrlAuth() {
     $('div#auth li').each(function(i) {
-        uid = $(this).attr('id');
-        uids.push(u);
+        uids.push($(this).attr('id'));
         $(this).click(function(){
+            uid = $(this).attr('id');
             $('span#uid').html(uid);
             changeView('menu');
         });
