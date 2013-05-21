@@ -68,13 +68,15 @@
     
     <div data-role="content">        
         <input class="addExe" type="radio" name="op" id="e1" value="1:5" />
-        <label for="e1">1 - 5</label>
-        <input class="addExe" type="radio" name="op" id="e2" value="1:10" />
-        <label for="e2">1 - 10</label>
-        <input class="addExe" type="radio" name="op" id="e3" value="1:15" />
-        <label for="e3">1 - 15</label>
-        <input class="addExe" type="radio" name="op" id="e4" value="1:20" />
-        <label for="e4">1 - 20</label>
+        <label for="e1">1 .. 5</label>
+        <input class="addExe" type="radio" name="op" id="e2" value="1:7" />
+        <label for="e2">1 .. 7</label>
+        <input class="addExe" type="radio" name="op" id="e3" value="1:10" />
+        <label for="e3">1 .. 10</label>
+        <input class="addExe" type="radio" name="op" id="e4" value="1:12" />
+        <label for="e4">1 .. 12</label>
+        <input class="addExe" type="radio" name="op" id="e5" value="1:15" />
+        <label for="e5">1 .. 15</label>
     </div>
     
     <div data-role="footer" data-position="fixed">
@@ -88,7 +90,7 @@
 
 <div data-role="page" id="play">
     <div data-role="header">
-        Clock :<span id=clock"> 300</span> - Score :<span id="score"> 8/10</span>
+        Clock <span id="clock"></span> | Score <span id="score">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
     </div>
     
     <div data-role="content">
