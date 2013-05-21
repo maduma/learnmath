@@ -145,6 +145,8 @@ Countdown.prototype.stop = function() {
   console.log('Stop countdown');
   clearInterval(this.timerId);
   if (this.stopHandler) { this.stopHandler(); }
+  this.currentTime = this.startTime;
+  this.display();
   $(this.stopSelector).button('disable');
   $(this.startSelector).button('enable');
 }
