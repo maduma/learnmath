@@ -14,7 +14,7 @@
 <div data-role="page"i id="auth">
 
     <div data-role="header">
-        <h1>Who are you?</h1>
+        <h1>Qui es-tu ?</h1>
     </div>
 
     <div data-role="content">
@@ -28,18 +28,11 @@
         <label for="noa">Noa</label>
     </div>
     
-    <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Player</a>
-        <a href="#confOp" data-role="button">Operation</a>
-        <a href="#addExe" data-role="button">Exercise</a>
-        <a href="#play" data-role="button">Play</a>
-    </div>
-    
 </div>
 
 <div data-role="page" id="confOp">
     <div data-role="header">
-        <h1>Select operation</h1>
+        <h1>Choisi l'operation</h1>
     </div>
     
     <div data-role="content">        
@@ -54,16 +47,13 @@
     </div>
     
     <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Player</a>
-        <a href="#confOp" data-role="button">Operation</a>
-        <a href="#addExe" data-role="button">Exercise</a>
-        <a href="#play" data-role="button">Play</a>
+        <a href="#auth" data-role="button">Choisir le joueur</a>
     </div> 
 </div>
 
 <div data-role="page" id="addExe">
     <div data-role="header">
-        <h1>Select range</h1>
+        <h1>Choisi les nombres</h1>
     </div>
     
     <div data-role="content">        
@@ -80,21 +70,21 @@
     </div>
     
     <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Player</a>
-        <a href="#confOp" data-role="button">Operation</a>
-        <a href="#addExe" data-role="button">Exercise</a>
-        <a href="#play" data-role="button">Play</a>
+        <a href="#auth" data-role="button">Choisir le joueur</a>
+        <a href="#confOp" data-role="button">Choisi l'operation</a>
     </div> 
     
 </div>
 
 <div data-role="page" id="play">
     <div data-role="header">
-        Clock <span id="clock"></span> | Score <span id="score">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        Clock <span id="clock"></span> |
+        Score <span id="scoreCorrect"></span>/<span id="scoreWrong"></span>
+        (<span id="scorePercent"></span>%)
     </div>
     
     <div data-role="content">
-        <h1><span id="question">9 + 7</span> = <span id="answer"></span></h1>
+        <h1><span id="question">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> = <span id="answer"></span></h1>
         <div id="numpad">
             <div class="ui-grid-b">
                 <div class="ui-block-a">
@@ -118,9 +108,10 @@
     </div>
 
     <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Player</a>
-        <a href="#confOp" data-role="button">Operation</a>
-        <button id="start">Start</button>
+        <a href="#auth" data-role="button">Choisir le joueur</a>
+        <a href="#confOp" data-role="button">Choisi l'operation</a>
+        <a href="#addExe" data-role="button">Choisi les nombres</a>
+        <button id="start">Commencer</button>
         <button id="stop">Stop</button>
     </div> 
     

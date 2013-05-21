@@ -2,11 +2,15 @@
  * Global properties
  */
 
-var uid;       // username
-var op;        // operation (add,sub,...)
-var exe;       // exercise Object
-var numpad;    // numpad Object
-var countdown; // countdown Object
+var uid;                 // username
+var op;                  // operation (add,sub,...)
+var exe;                 // exercise Object
+var numpad;              // numpad Object
+var countdown;           // countdown Object
+var correct = 0;             // score
+var wrong = 0;               // score
+var exeTime = 300;
+var defaultProba = 1000;
 
 /*
  * Binding
@@ -53,7 +57,7 @@ function AddExercise(min, max) {
     for (var j = min; j < max; j++) {
       this.allQ.push({
         question: i + ' + ' + j,
-        solution: i + j,
+        solution: (i + j).toString(),
         correct: 0,
         wrong: 0
       });
@@ -61,17 +65,43 @@ function AddExercise(min, max) {
   }
   this.min = min;
   this.max = max;
-  this.currentQ;
+}
+
+AddExercise.prototype.getProba = function(q) {
+  if (q.correct != 0) {
+    return Math.round(defaultProba / (q.correct + 1));
+  }
+  return defaultProba;
+}
+
+AddExercise.prototype.totalProba = function() {
+  var total = 0;
+  for (var i in this.allQ) {
+    total = total + this.getProba(this.allQ[i]);
+  }
+  return total; 
+}
+
+AddExercise.prototype.nextQuestion = function() {
+  var proba = Math.floor(Math.random() * this.totalProba());
+  var probaSum = 0;
+  for (var i in this.allQ) {
+    probaSum = probaSum + this.getProba(this.allQ[i])
+    if (probaSum > proba) {
+      return this.allQ[i];
+    }
+  }
 }
 
 // Virtual Numeric Keyboard
 
 function Numpad() {
-  this.question = '9 + 7';
+  this.question;
   this.answer = '';
-  this.solution = '16';
+  this.solution;
   this.handler;
-  this.enabled = true;
+  this.enabled = false;
+  this.exe;
   
   var that = this;
   $('div#numpad button').click(function() {
@@ -81,15 +111,34 @@ function Numpad() {
     $('span#answer').html(that.answer);
     if (that.solution == that.answer) {
       that.enabled = false;
-      if (that.handler) { that.handler('correct'); }
+      that.exe.correct++;
+      $('span#answer').fadeOut(800, function() {
+        that.handler('correct');
+      }).fadeIn(200);
     }
     if (that.solution.search(that.answer) == 0) {
       return;
     } else {
       that.enabled = false;
-      if (that.handler) { that.handler('correct'); }
+      that.exe.wrong++;
+      $('span#answer').
+        fadeOut(function() { $('span#answer').html(that.solution); }).
+        fadeIn().animate({color: 'red', 'font-size': '150%'}, 700).
+        animate({'font-size': '100%'}, 700).
+        fadeOut(function() { that.handler('wrong'); }).css('color', 'black').
+        fadeIn();
     }
   });
+}
+
+Numpad.prototype.setExe = function(exe) {
+  this.exe = exe;
+  this.question = exe.question;
+  this.solution = exe.solution;
+  this.answer = '';
+  $('span#question').html(this.question);
+  $('span#answer').html(this.answer);
+  numpad.enabled = true;
 }
 
 // Countdown
@@ -103,6 +152,7 @@ function Countdown(startTime) {
   this.clockSelector = 'span#clock';
   this.startSelector = 'button#start';
   this.stopSelector = 'button#stop';
+  this.enabled = false;
   
   this.display();
   $(this.startSelector).button('enable');
@@ -131,6 +181,7 @@ Countdown.prototype.start = function() {
   $(this.startSelector).button('disable');
   $(this.stopSelector).button('enable');
   this.currentTime = this.startTime;
+  this.enabled = true;
   this.timerId = setInterval(function() {
     that.currentTime--;
     that.display();
@@ -144,12 +195,49 @@ Countdown.prototype.start = function() {
 Countdown.prototype.stop = function() {
   console.log('Stop countdown');
   clearInterval(this.timerId);
-  if (this.stopHandler) { this.stopHandler(); }
+  this.enabled = false;
+  if (this.stopHandler) { 
+    if (this.currentTime == 0) {
+      this.stopHandler('end');
+    } else {
+      this.stopHandler('abort');
+    }
+  }
   this.currentTime = this.startTime;
   this.display();
   $(this.stopSelector).button('disable');
   $(this.startSelector).button('enable');
 }
+
+// handler
+
+function startGame() {
+  console.log("game started");
+  numpad.enabled = true;
+  score('start');
+}
+
+function stopGame(status) {
+  console.log("game stoped:", status);
+  numpad.enabled = false;
+}
+
+function score(status) {
+  console.log("score:", status);
+  if (status == 'correct') {
+    correct++;
+  } else if (status == 'wrong') {
+    wrong ++;
+  }
+  $('span#scoreCorrect').html(correct);
+  $('span#scoreWrong').html(wrong);
+  $('span#scorePercent').html(Math.floor(correct / (correct + wrong) * 100));
+  var nq = exe.nextQuestion();
+  console.log("nexQ:", nq);
+  if (countdown.enabled) {
+    numpad.setExe(nq);
+  }
+} 
 
 /* 
  * Main
@@ -180,7 +268,10 @@ $( document ).delegate('#addExe', 'pageinit', function() {
 $( document ).delegate('#play', 'pageinit', function() {
   console.log('pageinit play');
   numpad = new Numpad();
-  countdown = new Countdown(10);
+  numpad.handler = score;
+  countdown = new Countdown(exeTime);
+  countdown.startHandler = startGame;
+  countdown.stopHandler = stopGame;
 
   if (!uid) {
     $.mobile.changePage('#auth');
