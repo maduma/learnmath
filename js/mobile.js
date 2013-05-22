@@ -9,18 +9,31 @@ var numpad;              // numpad Object
 var countdown;           // countdown Object
 var correct = 0;             // score
 var wrong = 0;               // score
-var exeTime = 300;
+var exeTime = 20;
 var defaultProba = 1000;
+var bet = false;
+var lsTag = 'learnmath:'
+var wallet = 0.0;
+var minMoney = 2;
+var isLoaded = false;
+var texe = 0;
+var resLimit = 5;
+var perLimit = 90;
+var gain = 0;
 
 /*
  * Binding
  */
 
 function bindAuth() {
+  if (uid) { 
+    $('input#' + uid).prop('checked', true).checkboxradio( "refresh" );
+  }
   $('input.auth').click( function(event) {
     uid = $(this).val();
+    localStorage.setItem(lsTag + 'uid', uid); 
     console.log('uid:', uid);
-    $.mobile.changePage('#confOp', { transition: 'slidedown'});
+    $.mobile.changePage('#home', { transition: 'fade'});
   });
 }
 
@@ -28,7 +41,7 @@ function bindConfOp() {
   $('input.confOp').click( function(event) {
     op = $(this).val();
     console.log('op:', op);
-    $.mobile.changePage('#addExe', { transition: 'slidedown'});
+    $.mobile.changePage('#addExe', { transition: 'fade'});
   });
 }
 
@@ -37,11 +50,20 @@ function bindAddExe() {
     var range = $(this).val().split(':');
     console.log('addExe:', range);
     exe = new AddExercise(parseInt(range[0]), parseInt(range[1]) + 1);
-    $.mobile.changePage('#play', { transition: 'slidedown'});
+    $.mobile.changePage('#play', { transition: 'fade'});
   });
 }
 
 function bindPlay() {
+  $('input#bet').click( function(event) {
+    bet = $(this).prop('checked');
+    if (bet && wallet < minMoney) {
+      bet = false;
+      $('input#bet').prop('checked', bet).checkboxradio('refresh');
+      $.mobile.changePage('#noEnouthMoney', { role: "dialog" });
+    }
+    console.log(bet);
+  });
 }
 
 /*
@@ -65,6 +87,28 @@ function AddExercise(min, max) {
   }
   this.min = min;
   this.max = max;
+  this.current;
+  this.load();
+}
+
+AddExercise.prototype.load = function() {
+  for (var i in this.allQ) {
+    var correct = localStorage.getItem(lsTag + uid + ':' + this.allQ[i].question + '_correct');
+    if (correct) {
+      this.allQ[i].correct = parseInt(correct);
+    }
+    var wrong = localStorage.getItem(lsTag + uid + ':' + this.allQ[i].question + '_wrong');
+    if (wrong) {
+      this.allQ[i].wrong = parseInt(wrong);
+    }    
+  }
+}
+
+AddExercise.prototype.save = function() {
+  for (var i in this.allQ) {
+    localStorage.setItem(lsTag + uid + ':' + this.allQ[i].question + '_correct', this.allQ[i].correct);
+    localStorage.setItem(lsTag + uid + ':' + this.allQ[i].question + '_wrong', this.allQ[i].wrong);
+  }
 }
 
 AddExercise.prototype.getProba = function(q) {
@@ -88,7 +132,12 @@ AddExercise.prototype.nextQuestion = function() {
   for (var i in this.allQ) {
     probaSum = probaSum + this.getProba(this.allQ[i])
     if (probaSum > proba) {
-      return this.allQ[i];
+      if (!this.current || this.current.question != this.allQ[i].question) {
+        this.current = this.allQ[i]
+        return this.current;
+      }
+      console.log('same question. passing');
+      this.nextQuestion();
     }
   }
 }
@@ -112,9 +161,9 @@ function Numpad() {
     if (that.solution == that.answer) {
       that.enabled = false;
       that.exe.correct++;
-      $('span#answer').fadeOut(800, function() {
+      $('span#answer').delay(500).fadeOut(function() {
         that.handler('correct');
-      }).fadeIn(200);
+      }).fadeIn(100);
     }
     if (that.solution.search(that.answer) == 0) {
       return;
@@ -122,11 +171,9 @@ function Numpad() {
       that.enabled = false;
       that.exe.wrong++;
       $('span#answer').
-        fadeOut(function() { $('span#answer').html(that.solution); }).
-        fadeIn().animate({color: 'red', 'font-size': '150%'}, 700).
-        animate({'font-size': '100%'}, 700).
-        fadeOut(function() { that.handler('wrong'); }).css('color', 'black').
-        fadeIn();
+        fadeOut(function() { $(this).html(that.solution).css('color', 'red'); }).
+        fadeIn().delay(500).fadeOut(function() { $(this).css('color', 'black'); that.handler('wrong'); }).
+        fadeIn(100);
     }
   });
 }
@@ -209,17 +256,56 @@ Countdown.prototype.stop = function() {
   $(this.startSelector).button('enable');
 }
 
-// handler
+// Global functions
+
+function loadLocalStorage() {
+  if (isLoaded) { return; }
+  isLoaded = true;
+  uid = localStorage.getItem(lsTag + 'uid');
+  wallet = parseFloat(localStorage.getItem(lsTag + 'wallet'));
+  if (!wallet) { wallet = 0.0; }
+  texe = parseInt(localStorage.getItem(lsTag + 'texe'));
+  if (!texe) { texe = 0; }
+  console.log("load uid", uid);
+}
 
 function startGame() {
   console.log("game started");
   numpad.enabled = true;
   score('start');
+  $('#homeBt').addClass('ui-disabled');
+  $('#backBt').addClass('ui-disabled');
+  $('#bet').checkboxradio('disable');
 }
 
 function stopGame(status) {
+  gain = 0;
   console.log("game stoped:", status);
   numpad.enabled = false;
+  $('#homeBt').removeClass('ui-disabled');
+  $('#backBt').removeClass('ui-disabled');
+  $('#bet').checkboxradio('enable');
+  exe.save();
+  if (status == "end") {
+    if (correct + wrong < resLimit) {
+      $.mobile.changePage('#noEnouthRes', { role: "dialog" });
+      return;
+    }
+    texe++;
+    var percent = 100;
+    if (correct + wrong !=0 ) { percent = Math.round(correct / (correct + wrong) * 100); }
+    if (percent >= perLimit) { 
+      wallet = wallet + 0.1;
+      gain = 0.1;
+      if (percent >= 98) {
+        wallet = wallet + 0.1;
+        gain = 0.2;
+      }
+    }
+    localStorage.setItem(lsTag + 'wallet', wallet);
+    localStorage.setItem(lsTag + 'texe', texe);
+    $.mobile.changePage('#home', { transition: 'flip' });
+  }
 }
 
 function score(status) {
@@ -228,12 +314,16 @@ function score(status) {
     correct++;
   } else if (status == 'wrong') {
     wrong ++;
+  } else if (status == 'start') {
+    correct = 0;
+    wrong = 0;
   }
   $('span#scoreCorrect').html(correct);
   $('span#scoreWrong').html(wrong);
-  $('span#scorePercent').html(Math.floor(correct / (correct + wrong) * 100));
+  var percent = 100;
+  if (correct + wrong !=0 ) { percent = Math.round(correct / (correct + wrong) * 100); }
+  $('span#scorePercent').html(percent);
   var nq = exe.nextQuestion();
-  console.log("nexQ:", nq);
   if (countdown.enabled) {
     numpad.setExe(nq);
   }
@@ -243,20 +333,55 @@ function score(status) {
  * Main
  */
 
+// Page before show event
+$( document ).on('pagebeforeshow', '#home', function(event) {
+  console.log('#home pagebeforeshow');
+  $('span#uid-home').html(uid);
+  $('span#gain-home').html(gain.toFixed(2));
+  $('span#wallet-home').html(wallet.toFixed(2));
+  $('span#texe-home').html(texe);
+  $('span#ttime-home').html(Math.floor(texe * exeTime  / 3600) + 'h' +
+    Math.floor(texe * exeTime / 60) + 'min');
+  $('span#correct-home').html(correct);
+  $('span#wrong-home').html(wrong);
+  var percent = 100;
+  if (correct + wrong !=0 ) { percent = Math.round(correct / (correct + wrong) * 100); }
+  $('span#percent-home').html(percent + '%');
+  if (percent < 90) {
+    $('span#percent-home').css('color', 'red');
+  } else {
+    $('span#percent-home').css('color', 'green');
+  }
+});
+
 // Individual page init (jquery mobile)
- 
-$( document ).delegate('#auth', 'pageinit', function() {
+
+$( document ).on('pageinit', '#home', function() {
+  loadLocalStorage();
+  if (!uid) {
+    $.mobile.changePage('#auth');
+  }
+  console.log('pageinit home');
+});
+
+$( document ).on('pageinit', '#auth', function() {
+  loadLocalStorage();
+  bindAuth();
   console.log('pageinit auth');
 });
  
-$( document ).delegate('#confOp', 'pageinit', function() {
+$( document ).on('pageinit', '#confOp', function() {
+  loadLocalStorage();
+  bindConfOp();
   console.log('pageinit confOp');
   if (!uid) {
     $.mobile.changePage('#auth');
   }
 });
 
-$( document ).delegate('#addExe', 'pageinit', function() {
+$( document ).on('pageinit', '#addExe', function() {
+  loadLocalStorage();
+  bindAddExe();
   console.log('pageinit addExe');
   if (!uid) {
     $.mobile.changePage('#auth');
@@ -265,7 +390,9 @@ $( document ).delegate('#addExe', 'pageinit', function() {
   }
 });
 
-$( document ).delegate('#play', 'pageinit', function() {
+$( document ).on('pageinit', '#play', function() {
+  loadLocalStorage();
+  bindPlay();
   console.log('pageinit play');
   numpad = new Numpad();
   numpad.handler = score;
@@ -280,14 +407,4 @@ $( document ).delegate('#play', 'pageinit', function() {
   } else if (!exe) {
     $.mobile.changePage('#addExe');
   }
-});
-
-// main page init
-
-$( document ).ready(function() {
-  console.log("Document Ready.");
-  bindAuth();
-  bindConfOp();
-  bindAddExe();
-  bindPlay();
 });

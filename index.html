@@ -11,7 +11,31 @@
 </head> 
 <body> 
 
-<div data-role="page"i id="auth">
+<div data-role="page" id="home">
+
+    <div data-role="header">
+      <h1>Home</h1>
+    </div>
+
+    <div data-role="content">
+      <h3>Bonjour <span id="uid-home">hugo</span>. Tu as <span id="wallet-home">6.30</span> Euro</h3>
+      <p>Tu as fait <span id="texe-home">0</span> exercice (<span id="ttime-home">1h30m</span>)</p>
+      <h3>Dernier exercice</h3>
+      <p>
+        <span id="correct-home">54</span> Correct, <span id="wrong-home">4</span> fautes 
+        (<span id="percent-home">98</span>) |
+        <span id="gain-home"></span> Euro
+     </p>
+    </div>
+
+    <div data-role="footer" data-position="fixed">
+        <fieldset data-role="controlgroup" data-type="horizontal">
+          <a href="#confOp" data-role="button" data-icon="arrow-r">Next</a>
+        </fieldset>
+    </div> 
+</div>
+
+<div data-role="page" id="auth">
 
     <div data-role="header">
         <h1>Qui es-tu ?</h1>
@@ -47,7 +71,9 @@
     </div>
     
     <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Choisir le joueur</a>
+        <fieldset data-role="controlgroup" data-type="horizontal">
+          <a href="#home" data-role="button" data-icon="home">Home</a>
+        </fieldset>
     </div> 
 </div>
 
@@ -57,34 +83,38 @@
     </div>
     
     <div data-role="content">        
-        <input class="addExe" type="radio" name="op" id="e1" value="1:5" />
-        <label for="e1">1 .. 5</label>
-        <input class="addExe" type="radio" name="op" id="e2" value="1:7" />
-        <label for="e2">1 .. 7</label>
-        <input class="addExe" type="radio" name="op" id="e3" value="1:10" />
-        <label for="e3">1 .. 10</label>
-        <input class="addExe" type="radio" name="op" id="e4" value="1:12" />
-        <label for="e4">1 .. 12</label>
-        <input class="addExe" type="radio" name="op" id="e5" value="1:15" />
-        <label for="e5">1 .. 15</label>
+        <input class="addExe" type="radio" name="op" id="e1" value="1:5:1:1" />
+        <label for="e1">1 .. 5  | 12 Games | 1 Euro | 1 Bet</label>
+        <input class="addExe" type="radio" name="op" id="e2" value="6:10:2:1" />
+        <label for="e2">6 .. 10 | 3 Games | 2 Euro | 1 Bet</label>
+        <input class="addExe" type="radio" name="op" id="e3" value="1:10:3:1" />
+        <label for="e3">1 .. 10 | 0 Games | 3 Euro | 1 Bet</label>
+        <input class="addExe" type="radio" name="op" id="e4" value="1:12:5:2" />
+        <label for="e4">1 .. 12 | 0 Games | 5 Euro | 2 Bet</label>
+        <input class="addExe" type="radio" name="op" id="e5" value="1:15:10:2" />
+        <label for="e5">1 .. 15 | 0 Games | 10 Euro | 2 Bet</label>
     </div>
     
     <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Choisir le joueur</a>
-        <a href="#confOp" data-role="button">Choisi l'operation</a>
+        <fieldset data-role="controlgroup" data-type="horizontal">
+          <a href="#home" data-role="button" data-icon="home">Home</a>
+          <a href="#confOp" data-role="button" data-icon="arrow-l">Back</a>
+        </fieldset>
     </div> 
     
 </div>
 
 <div data-role="page" id="play">
     <div data-role="header">
-        Clock <span id="clock"></span> |
-        Score <span id="scoreCorrect"></span>/<span id="scoreWrong"></span>
-        (<span id="scorePercent"></span>%)
+        <div class="scorePanel">
+          Clock <span id="clock"></span> |
+          Score <span id="scoreCorrect">0</span> / <span id="scoreWrong">0</span>
+          - <span id="scorePercent">100</span>%
+        </div>
     </div>
     
     <div data-role="content">
-        <h1><span id="question">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> = <span id="answer"></span></h1>
+        <h1><span id="question">? ? ?</span> = <span id="answer">?</span></h1>
         <div id="numpad">
             <div class="ui-grid-b">
                 <div class="ui-block-a">
@@ -108,13 +138,34 @@
     </div>
 
     <div data-role="footer" data-position="fixed">
-        <a href="#auth" data-role="button">Choisir le joueur</a>
-        <a href="#confOp" data-role="button">Choisi l'operation</a>
-        <a href="#addExe" data-role="button">Choisi les nombres</a>
-        <button id="start">Commencer</button>
-        <button id="stop">Stop</button>
+        <fieldset data-role="controlgroup" data-type="horizontal">
+          <a id="homeBt" href="#home" data-role="button" data-icon="home">Home</a>
+          <a id="backBt" href="#addExe" data-role="button" data-icon="arrow-l">Back</a>
+          <button id="start" data-icon="check">Start</button>
+          <button id="stop" data-icon="delete">Stop</button>
+          <input type="checkbox" name="bet" val="true" id="bet" data-mini="true" />
+          <label for="bet">Bet</label>
+        </fieldset>
     </div> 
     
+</div>
+
+<div data-role="page" id="noEnouthMoney">
+
+    <div data-role="content">
+      <h1>Pas assez d'argent !</h1>
+      <a href="#play" data-role="button">Ok</a>
+    </div>
+
+</div>
+
+<div data-role="page" id="noEnouthRes">
+
+    <div data-role="content">
+      <h1>Trop lent !</h1>
+      <a href="#play" data-role="button">Ok</a>
+    </div>
+
 </div>
 
 </body>

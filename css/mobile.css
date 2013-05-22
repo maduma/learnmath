@@ -1,6 +1,15 @@
-﻿.ui-footer {
-    padding: 10px;
+﻿span#scoreCorrect {
+  color: green;
 }
-.ui-header {
-    padding: 10px;
+
+span#scoreWrong {
+  color: red;
+}
+
+.ui-footer {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.scorePanel {
+  padding: 10px;
 }
