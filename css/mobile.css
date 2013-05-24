@@ -1,9 +1,21 @@
 span#scoreCorrect {
-  color: blue;
+  color: green;
 }
 
 span#scoreWrong {
   color: red;
+}
+
+span.percentGood {
+  color: green;
+}
+
+span.percentBad {
+  color: red;
+}
+
+span.percentBest {
+  color: blue;
 }
 
 .ui-footer {
