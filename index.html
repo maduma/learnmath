@@ -1,15 +1,19 @@
 ﻿<!DOCTYPE html> 
-<html> 
+<html manifest="cache.manifest"> 
 <head> 
     <title>Learn Math</title> 
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> 
+    <link rel="stylesheet" href="lib/jqm/jquery.mobile-1.3.1.min.css" />
     <link rel="stylesheet" href="css/mobile.css" />
-    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
+    <link rel="apple-touch-startup-image" href="img/splash.png" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <script src="lib/jquery-1.9.1.min.js"></script>
+    <script src="lib/jqm/jquery.mobile-1.3.1.min.js"></script>
     <script src="js/mobile.js"></script>
 </head> 
-<body> 
+<body>
 
 <div data-role="page" id="home">
 
@@ -56,7 +60,7 @@
 
 <div data-role="page" id="confOp">
     <div data-role="header">
-        <h1>Choisi l'operation</h1>
+        <h1>Type</h1>
     </div>
     
     <div data-role="content">        
@@ -79,20 +83,20 @@
 
 <div data-role="page" id="addExe">
     <div data-role="header">
-        <h1>Choisi les nombres</h1>
+        <h1>Nombres</h1>
     </div>
     
     <div data-role="content">        
-        <input class="addExe" type="radio" name="op" id="e1" value="1:5:1:1" />
-        <label for="e1">1 .. 5  | 12 Games | 1 Euro | 1 Bet</label>
-        <input class="addExe" type="radio" name="op" id="e2" value="6:10:2:1" />
-        <label for="e2">6 .. 10 | 3 Games | 2 Euro | 1 Bet</label>
-        <input class="addExe" type="radio" name="op" id="e3" value="1:10:3:1" />
-        <label for="e3">1 .. 10 | 0 Games | 3 Euro | 1 Bet</label>
-        <input class="addExe" type="radio" name="op" id="e4" value="1:12:5:2" />
-        <label for="e4">1 .. 12 | 0 Games | 5 Euro | 2 Bet</label>
-        <input class="addExe" type="radio" name="op" id="e5" value="1:15:10:2" />
-        <label for="e5">1 .. 15 | 0 Games | 10 Euro | 2 Bet</label>
+        <input class="addExe" type="radio" name="op" id="e1" value="1:5:0.1:1:1" />
+        <label for="e1">1-5 | 0.10 | 1E | 1B</label>
+        <input class="addExe" type="radio" name="op" id="e2" value="6:10:0.2:2:1" />
+        <label for="e2">6-10 | 0.20 | 2E | 1B</label>
+        <input class="addExe" type="radio" name="op" id="e3" value="1:10:0.2:2:1" />
+        <label for="e3">1-10 | 0.20 | 2E | 1B</label>
+        <input class="addExe" type="radio" name="op" id="e4" value="1:12:0.3:3:2" />
+        <label for="e4">1-12 | 0.30 | 3E | 2B</label>
+        <input class="addExe" type="radio" name="op" id="e5" value="1:15:0.3:5:2" />
+        <label for="e5">1-15 | 0.30 | 5E | 2B</label>
     </div>
     
     <div data-role="footer" data-position="fixed">
@@ -114,7 +118,7 @@
     </div>
     
     <div data-role="content">
-        <h1><span id="question">? ? ?</span> = <span id="answer">?</span></h1>
+        <h1 class="prob"><span id="question">? ? ?</span> = <span id="answer">?</span></h1>
         <div id="numpad">
             <div class="ui-grid-b">
                 <div class="ui-block-a">
@@ -139,7 +143,6 @@
 
     <div data-role="footer" data-position="fixed">
         <fieldset data-role="controlgroup" data-type="horizontal">
-          <a id="homeBt" href="#home" data-role="button" data-icon="home">Home</a>
           <a id="backBt" href="#addExe" data-role="button" data-icon="arrow-l">Back</a>
           <button id="start" data-icon="check">Start</button>
           <button id="stop" data-icon="delete">Stop</button>
@@ -153,7 +156,7 @@
 <div data-role="page" id="noEnouthMoney">
 
     <div data-role="content">
-      <h1>Pas assez d'argent !</h1>
+      <h2>Pas assez d'argent !</h2>
       <a href="#play" data-role="button">Ok</a>
     </div>
 
@@ -162,7 +165,7 @@
 <div data-role="page" id="noEnouthRes">
 
     <div data-role="content">
-      <h1>Trop lent !</h1>
+      <h2>Trop lent !</h2>
       <a href="#play" data-role="button">Ok</a>
     </div>
 

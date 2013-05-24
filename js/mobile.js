@@ -9,7 +9,7 @@ var numpad;              // numpad Object
 var countdown;           // countdown Object
 var correct = 0;             // score
 var wrong = 0;               // score
-var exeTime = 20;
+var exeTime = 300;
 var defaultProba = 1000;
 var bet = false;
 var lsTag = 'learnmath:'
@@ -17,8 +17,9 @@ var wallet = 0.0;
 var minMoney = 2;
 var isLoaded = false;
 var texe = 0;
-var resLimit = 5;
+var resLimit = 40;
 var perLimit = 90;
+var bonusLimit = 98;
 var gain = 0;
 
 /*
@@ -49,7 +50,7 @@ function bindAddExe() {
   $('input.addExe').click( function(event) {
     var range = $(this).val().split(':');
     console.log('addExe:', range);
-    exe = new AddExercise(parseInt(range[0]), parseInt(range[1]) + 1);
+    exe = new AddExercise(parseInt(range[0]), parseInt(range[1]) + 1, parseFloat(range[2]));
     $.mobile.changePage('#play', { transition: 'fade'});
   });
 }
@@ -73,7 +74,7 @@ function bindPlay() {
 
 // Addition Exercise
 
-function AddExercise(min, max) {
+function AddExercise(min, max, gain) {
   this.allQ = [];
   for (var i = min; i < max; i++) {
     for (var j = min; j < max; j++) {
@@ -85,10 +86,12 @@ function AddExercise(min, max) {
       });
     }
   }
+  this.gain = gain;
   this.min = min;
   this.max = max;
   this.current;
   this.load();
+  console.log('new Add', min, max, gain);
 }
 
 AddExercise.prototype.load = function() {
@@ -295,11 +298,11 @@ function stopGame(status) {
     var percent = 100;
     if (correct + wrong !=0 ) { percent = Math.round(correct / (correct + wrong) * 100); }
     if (percent >= perLimit) { 
-      wallet = wallet + 0.1;
-      gain = 0.1;
-      if (percent >= 98) {
-        wallet = wallet + 0.1;
-        gain = 0.2;
+      wallet = wallet + exe.gain;
+      gain = exe.gain;
+      if (percent >= bonusLimit) {
+        wallet = wallet + exe.gain;
+        gain = gain + exe.gain;
       }
     }
     localStorage.setItem(lsTag + 'wallet', wallet);
@@ -407,4 +410,11 @@ $( document ).on('pageinit', '#play', function() {
   } else if (!exe) {
     $.mobile.changePage('#addExe');
   }
+});
+
+$( document ).ready(function(){
+  console.log('Document ready');
+  $('body').on('touchmove', function(event) {
+    event.preventDefault();
+  });
 });
