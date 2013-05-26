@@ -29,3 +29,7 @@ span.percentBest {
 h1.prob {
   text-align: center;
 }
+
+div#home, div#auth, div#confOp, div#addExe, div#subExe, div#play {
+  background-image: url("../img/splash.png");
+}
