@@ -66,7 +66,7 @@
     <div data-role="content">        
         <input class="confOp" type="radio" name="op" id="add" value="add" />
         <label for="add">+ Addition</label>
-        <input disabled="disabled" class="confOp" type="radio" name="op" id="sub" value="sub" />
+        <input class="confOp" type="radio" name="op" id="sub" value="sub" />
         <label for="sub">- Soustraction</label>
         <input disabled="disabled" class="confOp" type="radio" name="op" id="mul" value="mul" />
         <label for="mul">* Multiplication</label>
@@ -83,7 +83,7 @@
 
 <div data-role="page" id="addExe">
     <div data-role="header">
-        <h1>Nombres</h1>
+        <h1>+ Plus</h1>
     </div>
     
     <div data-role="content">        
@@ -97,6 +97,33 @@
         <label for="adde4">1-12 | 0.30 | <span class="addExe" id="adde4Euro">3</span>E | 2B</label>
         <input class="addExe" type="radio" name="op" id="adde5" value="1:15:0.3:5:2" />
         <label for="adde5">1-15 | 0.30 | <span class="addExe" id="adde5Euro">5</span>E | 2B</label>
+    </div>
+    
+    <div data-role="footer" data-position="fixed">
+        <fieldset data-role="controlgroup" data-type="horizontal">
+          <a href="#home" data-role="button" data-icon="home">Home</a>
+          <a href="#confOp" data-role="button" data-icon="arrow-l">Back</a>
+        </fieldset>
+    </div> 
+    
+</div>
+
+<div data-role="page" id="subExe">
+    <div data-role="header">
+        <h1>- Moins</h1>
+    </div>
+    
+    <div data-role="content">        
+        <input class="subExe" type="radio" name="op" id="sube1" value="1:5:0.1:1:1" />
+        <label for="sube1">1-5 | 0.10 | <span class="subExe" id="sube1Euro">1</span>E | 1B</label>
+        <input class="subExe" type="radio" name="op" id="sube2" value="1:10:0.2:2:1" />
+        <label for="sube2">1-10 | 0.20 | <span class="subExe" id="sube2Euro">2</span>E | 1B</label>
+        <input class="subExe" type="radio" name="op" id="sube3" value="1:13:0.2:2:1" />
+        <label for="sube3">1-13 | 0.20 | <span class="subExe" id="sube3Euro">2</span>E | 1B</label>
+        <input class="subExe" type="radio" name="op" id="sube4" value="1:16:0.3:3:2" />
+        <label for="sube4">1-16 | 0.30 | <span class="subExe" id="sube4Euro">3</span>E | 2B</label>
+        <input class="subExe" type="radio" name="op" id="sube5" value="1:20:0.3:5:2" />
+        <label for="sube5">1-20 | 0.30 | <span class="subExe" id="sube5Euro">5</span>E | 2B</label>
     </div>
     
     <div data-role="footer" data-position="fixed">

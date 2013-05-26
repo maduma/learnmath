@@ -40,9 +40,10 @@ function bindAuth() {
 
 function bindConfOp() {
   $('input.confOp').click( function(event) {
+    console.log($(this).attr('id'));
     op = $(this).val();
     console.log('op:', op);
-    $.mobile.changePage('#addExe', { transition: 'fade'});
+    $.mobile.changePage('#' + op + 'Exe', { transition: 'fade'});
   });
 }
 
@@ -52,6 +53,16 @@ function bindAddExe() {
     var id =$(this).attr('id');
     console.log('addExe:', range);
     exe = new AddExercise(id, parseInt(range[0]), parseInt(range[1]) + 1, parseFloat(range[2]), parseFloat(range[3]));
+    $.mobile.changePage('#play', { transition: 'fade'});
+  });
+}
+
+function bindSubExe() {
+  $('input.subExe').click( function(event) {
+    var range = $(this).val().split(':');
+    var id =$(this).attr('id');
+    console.log('subExe:', range);
+    exe = new SubExercise(id, parseInt(range[0]), parseInt(range[1]) + 1, parseFloat(range[2]), parseFloat(range[3]));
     $.mobile.changePage('#play', { transition: 'fade'});
   });
 }
@@ -151,6 +162,36 @@ AddExercise.prototype.nextQuestion = function() {
     }
   }
 }
+
+// Sub Exercice
+
+function SubExercise(id, min, max, gain, initEuro) {
+  this.allQ = [];
+  for (var i = min; i < max; i++) {
+    for (var j = min; j < max; j++) {
+      if (i >= j ) {
+        this.allQ.push({
+          question: i + ' - ' + j,
+          solution: (i - j).toString(),
+          correct: 0,
+          wrong: 0
+        });
+      }
+    }
+  }
+  this.id = id;
+  this.euro = initEuro;
+  this.gain = gain;
+  this.min = min;
+  this.max = max;
+  this.current;
+  this.load();
+  console.log('new Sub', min, max, gain, initEuro);
+}
+
+SubExercise.prototype = new AddExercise();        // inherit AddExe
+SubExercise.prototype.constructor = SubExercise;  // correct the constructor pointer because it points to SubExercise
+
 
 // Virtual Numeric Keyboard
 
@@ -389,6 +430,21 @@ $( document ).on('pagebeforeshow', '#addExe', function(event) {
   });
 });
 
+$( document ).on('pagebeforeshow', '#subExe', function(event) {
+  $('input.subExe').each(function(i, e) {
+    var id = $(e).attr('id');
+    var euro = localStorage.getItem(lsTag + uid + ':'  + id + 'Euro');
+    if (euro) {
+      $('span#' + id + 'Euro').html(parseFloat(euro).toFixed(2));
+    }
+    if (parseFloat(euro) < 0.01) {
+      $('input#' + id).checkboxradio('disable');
+    } else {
+      $('input#' + id).checkboxradio('enable');
+    }
+  });
+});
+
 // Individual page init (jquery mobile)
 
 $( document ).on('pageinit', '#home', function() {
@@ -415,10 +471,20 @@ $( document ).on('pageinit', '#confOp', function() {
 });
 
 $( document ).on('pageinit', '#addExe', function() {
-  toto = $('lable span');
   loadLocalStorage();
   bindAddExe();
   console.log('pageinit addExe');
+  if (!uid) {
+    $.mobile.changePage('#auth');
+  } else if (!op) {
+    $.mobile.changePage('#confOp');
+  }
+});
+
+$( document ).on('pageinit', '#subExe', function() {
+  loadLocalStorage();
+  bindSubExe();
+  console.log('pageinit subExe');
   if (!uid) {
     $.mobile.changePage('#auth');
   } else if (!op) {
