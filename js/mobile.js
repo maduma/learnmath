@@ -154,11 +154,11 @@ AddExercise.prototype.nextQuestion = function() {
     if (probaSum > proba) {
       if (!this.current || this.current.question != this.allQ[i].question) {
         this.current = this.allQ[i]
-        console.log(this.current);
+        console.log('nextQuestion', this.current);
         return this.current;
       }
       console.log('same question. passing');
-      this.nextQuestion();
+      return this.nextQuestion();
     }
   }
 }
@@ -204,20 +204,19 @@ function Numpad() {
   var that = this;
   $('div#numpad button').click(function() {
     if (!that.enabled) { return; }
+    that.enabled = false;
     var digit = $(this).attr('id').substring(1);
     that.answer = that.answer + digit;
     $('span#answer').html(that.answer);
     if (that.exe.solution == that.answer) {
-      that.enabled = false;
       that.exe.correct++;
       $('span#answer').delay(500).fadeOut(function() {
         that.handler('correct');
       }).fadeIn(100);
-    }
-    if (that.exe.solution.search(that.answer) == 0) {
+    } else if (that.exe.solution.search(that.answer) == 0) {
+      that.enabled = true;
       return;
     } else {
-      that.enabled = false;
       that.exe.wrong++;
       $('span#answer').
         fadeOut(function() { $(this).html(that.exe.solution).css('color', 'red'); }).
