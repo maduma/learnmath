@@ -482,6 +482,9 @@ $( document ).on('pageinit', '#home', function() {
     $.mobile.changePage('#auth');
   }
   console.log('pageinit home');
+  $('div#home').on( 'swipeleft', function() {
+    $.mobile.changePage('#confOp', { transition: 'slide'});
+  });
 });
 
 $( document ).on('pageinit', '#auth', function() {
