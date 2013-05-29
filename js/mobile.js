@@ -21,6 +21,7 @@ var resLimit = 25;
 var perLimit = 88;
 var bonusLimit = 96;
 var gain = 0;
+var reports = [];
 
 /*
  * Binding
@@ -85,6 +86,22 @@ function bindPlay() {
 
 
 // Addition Exercise
+
+function ExeReport(label, correct, wrong, state, time, gain) {
+  this.label = label;
+  this.timestamp = new Date().getTime();
+  this.correct = correct;
+  this.wrong = wrong;
+  this.total = correct + wrong;
+  var percent = 100;
+  if (correct + wrong !=0 ) {
+    percent = Math.round(correct / (correct + wrong) * 100);
+  }
+  this.percent = percent;
+  this.state = state;
+  this.time = time;
+  this.gain = gain;
+}
 
 function AddExercise(id, min, max, gain, initEuro) {
   this.allQ = [];
@@ -313,6 +330,12 @@ function loadLocalStorage() {
   texe = parseInt(localStorage.getItem(lsTag + 'texe'));
   if (!texe) { texe = 0; }
   console.log("load uid", uid);
+  reports = JSON.parse(localStorage.getItem(lsTag + 'uid' + ':reports'));
+  if (!reports) { reports = []; }
+}
+
+function saveReports() {
+  localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
 }
 
 function startGame() {
@@ -335,6 +358,8 @@ function stopGame(status) {
     if (correct + wrong < resLimit) {
       $.mobile.changePage('#noEnouthRes', { role: "dialog" });
       exe.save();
+      reports.push(new ExeReport(exe.id, correct, wrong, 'late', exeTime, 0));
+      localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
       return;
     }
     texe++;
@@ -355,6 +380,11 @@ function stopGame(status) {
     localStorage.setItem(lsTag + 'wallet', wallet);
     localStorage.setItem(lsTag + 'texe', texe);
     $.mobile.changePage('#home', { transition: 'flip' });
+    reports.push(new ExeReport(exe.id, correct, wrong, 'win', exeTime, gain));
+    localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
+  } else {
+    reports.push(new ExeReport(exe.id, correct, wrong, 'abort', exeTime, 0));
+    localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
   }
   if (exe.euro < 0.01) { exe.euro = 0; }
   exe.save();
