@@ -330,12 +330,12 @@ function loadLocalStorage() {
   texe = parseInt(localStorage.getItem(lsTag + 'texe'));
   if (!texe) { texe = 0; }
   console.log("load uid", uid);
-  reports = JSON.parse(localStorage.getItem(lsTag + 'uid' + ':reports'));
+  reports = JSON.parse(localStorage.getItem(lsTag + uid + ':reports'));
   if (!reports) { reports = []; }
 }
 
 function saveReports() {
-  localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
+  localStorage.setItem(lsTag + uid + ':reports', JSON.stringify(reports));
 }
 
 function startGame() {
@@ -359,7 +359,7 @@ function stopGame(status) {
       $.mobile.changePage('#noEnouthRes', { role: "dialog" });
       exe.save();
       reports.push(new ExeReport(exe.id, correct, wrong, 'late', exeTime, 0));
-      localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
+      saveReports();
       return;
     }
     texe++;
@@ -381,10 +381,10 @@ function stopGame(status) {
     localStorage.setItem(lsTag + 'texe', texe);
     $.mobile.changePage('#home', { transition: 'flip' });
     reports.push(new ExeReport(exe.id, correct, wrong, 'win', exeTime, gain));
-    localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
+    saveReports();
   } else {
     reports.push(new ExeReport(exe.id, correct, wrong, 'abort', exeTime, 0));
-    localStorage.setItem(lsTag + 'uid' + ':reports', JSON.stringify(reports));
+    saveReports();
   }
   if (exe.euro < 0.01) { exe.euro = 0; }
   exe.save();
