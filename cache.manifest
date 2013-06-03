@@ -1,5 +1,8 @@
 CACHE MANIFEST
-# rev 49
+# rev 59
+NETWORK:
+/server/sendReports
+CACHE:
 css/mobile.css
 img/apple-touch-icon.png
 img/splash.png

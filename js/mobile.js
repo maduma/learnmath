@@ -331,11 +331,24 @@ function loadLocalStorage() {
   if (!texe) { texe = 0; }
   console.log("load uid", uid);
   reports = JSON.parse(localStorage.getItem(lsTag + uid + ':reports'));
-  if (!reports) { reports = []; }
+  if (!reports) { reports = []; } else {
+    var data = {};
+    data.uid = uid;
+    data.reports = reports;
+    $.post('/server/sendReports', JSON.stringify(data), function(data) {
+      console.log('sendReports', data);
+    }, 'text');
+  }
 }
 
 function saveReports() {
   localStorage.setItem(lsTag + uid + ':reports', JSON.stringify(reports));
+  var data = {};
+  data.uid = uid;
+  data.reports = reports;
+  $.post('/server/sendReports', JSON.stringify(data), function(data) {
+    console.log('sendReports', data);
+  }, 'text');
 }
 
 function startGame() {
