@@ -2,6 +2,10 @@
  * Global properties
  */
 
+var LEARNMATH = {
+  player: new Player()
+}
+ 
 var uid;                 // username
 var op;                  // operation (add,sub,...)
 var exe;                 // exercise Object
@@ -84,6 +88,38 @@ function bindPlay() {
  * Custom object
  */
 
+function Player() {
+  this.uid = '';
+  this.name = '';
+  this.wallet = 0.0;
+  this.playingTime = 0;
+  this.finished = 0;
+}
+
+Player.prototype.load = function() {
+  var savedPlayer = JSON.parse(localStorage.getItem(lsTag + 'player'));
+  if (savedPlayer == null) {
+    console.log('Cannot find localStorage Item ' + lsTag + 'player');
+    return null;
+  }
+  this.uid = savedPlayer.uid;
+  this.name = savedPlayer.name;
+  this.wallet = savedPlayer.wallet;
+  this.playingTime = savedPlayer.playingTime;
+  this.finished = savedPlayer.finished;
+  console.log('Player loaded ' + this);
+  return this;
+}
+
+Player.prototype.save = function() {
+  localStorage.setItem(lsTag + 'player', JSON.stringify(this));
+}
+
+Player.prototype.migrate = function() {
+  $.post('/server/migrate', JSON.stringify(this), function(data) {
+    console.log('migrate', data);
+  }, 'text');
+}
 
 // Addition Exercise
 
@@ -339,6 +375,15 @@ function loadLocalStorage() {
       console.log('sendReports', data);
     }, 'text');
   }
+  if (!LEARNMATH.player.load()) {
+    console.log('no player found, let convert');
+    LEARNMATH.player.uid = uid;
+    LEARNMATH.player.wallet = wallet;
+    LEARNMATH.player.playingTime = texe * exeTime;
+    LEARNMATH.player.finished = texe;
+    LEARNMATH.player.save();
+    LEARNMATH.player.migrate();
+  }
 }
 
 function saveReports() {
@@ -496,7 +541,7 @@ $( document ).on('pageinit', '#home', function() {
   }
   console.log('pageinit home');
   $('div#home').on( 'swipeleft', function() {
-    $.mobile.changePage('#confOp', { transition: 'slide'});
+    $.mobile.changePage('#confOp', { reverse: true, transition: 'slide'});
   });
 });
 
