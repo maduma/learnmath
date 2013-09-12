@@ -1,7 +1,9 @@
 CACHE MANIFEST
-# rev 63
+# rev 68
 NETWORK:
 /server/sendReports
+/server/migrate
+/server/loadWorkouts
 CACHE:
 css/mobile.css
 img/apple-touch-icon.png

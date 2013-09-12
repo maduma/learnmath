@@ -2,9 +2,9 @@
  * Global properties
  */
 
-var LEARNMATH = {
-  player: new Player()
-}
+var LEARNMATH = {};
+LEARNMATH.player = new Player();
+LEARNMATH.workoutSet = new WorkoutSet(LEARNMATH.player);
  
 var uid;                 // username
 var op;                  // operation (add,sub,...)
@@ -87,6 +87,79 @@ function bindPlay() {
 /*
  * Custom object
  */
+ 
+function Workout() {
+  this.name = '';
+  this.label = '';
+  this.bank = 0.0;
+  // settings
+  this.initialBank = 0.0;
+  this.time = 0;
+  this.minAnswer = 0;
+  this.gold = 0;
+  this.silver = 0;
+  this.bronze = 0;
+  this.goldPrice = 0.0;
+  this.silverPrice = 0.0;
+  this.bronzePrice = 0.0;
+  // stat
+  this.gain = 0.0;
+  this.win = 0;
+  this.late = 0;
+  this.abort = 0;
+  this.gold = 0;
+  this.silver = 0;
+  this.bronze = 0;
+}
+
+function WorkoutSet(player) {
+  this.set = {};
+  this.player = player;
+  console.log('new WorkoutSet');
+}
+
+WorkoutSet.prototype.serverLoadWorkouts = function() {
+  var that = this;
+  $.get('/server/loadWorkouts/' + this.player.uid, function(data) {
+    console.log('serverLoadWorkouts');
+    for (var elem in data) {
+      var swk = data[elem].fields;
+      var wk = that.set[swk.name];
+      console.log(wk);
+      if (!that.set[swk.name]) {
+        wk = new Workout();
+        wk.name = swk.name;
+        wk.bank = swk.initialBank;
+        that.set[wk.name] = wk;
+        console.log('New Workout ' + swk.name); 
+      }
+      wk.label = swk.label;
+      wk.initialBank = swk.initialBank;
+      wk.time = swk.time;
+      wk.minAnswer = swk.minAnswer;
+      wk.gold = swk.gold;
+      wk.silver = swk.silver;
+      wk.bronze = swk.bronze;
+      wk.goldPrice = swk.goldPrice;
+      wk.silverPrice = swk.silverPrice;
+      wk.bronzePrice = swk.bronzePrice;
+    }
+  }, 'json');
+}
+
+WorkoutSet.prototype.load = function() {
+  var savedWkS = JSON.parse(localStorage.getItem(lsTag + 'workoutSet:' + this.player.uid));
+  if (savedWkS == null) {
+    console.log('Cannot found localStrorage Item ' + lsTag + 'workoutSet:' + this.player.uid);
+    return null;
+  }
+  this.set = savedWkS.set;
+  return this;
+}
+
+WorkoutSet.prototype.save = function() {
+  localStorage.setItem(lsTag + 'workoutSet:' + this.player.uid, JSON.stringify(this));
+}
 
 function Player() {
   this.uid = '';
@@ -94,6 +167,7 @@ function Player() {
   this.wallet = 0.0;
   this.playingTime = 0;
   this.finished = 0;
+  console.log('new Player');
 }
 
 Player.prototype.load = function() {
@@ -382,8 +456,12 @@ function loadLocalStorage() {
     LEARNMATH.player.playingTime = texe * exeTime;
     LEARNMATH.player.finished = texe;
     LEARNMATH.player.save();
-    LEARNMATH.player.migrate();
   }
+  LEARNMATH.player.migrate();
+  
+  LEARNMATH.workoutSet.load();
+  LEARNMATH.workoutSet.serverLoadWorkouts();
+  LEARNMATH.workoutSet.save();
 }
 
 function saveReports() {
